@@ -6,4 +6,4 @@ jobs:
   hello:
     runs-on: [self-hosted, zig-m2-test]
     steps:
-      - run: echo hello && sleep 2 && echo done # rev 2
+      - run: echo hello && sleep 2 && echo done # rev 3
