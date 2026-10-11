@@ -2,30 +2,22 @@ name: zig-m2-test
 on:
   push:
     branches: [zig-m2-test]
-env:
-  WORKFLOW_ENV: from-workflow
 jobs:
   hello:
     runs-on: [self-hosted, zig-m2-test]
-    env:
-      JOB_ENV: ${{ github.ref_name }}-job
     steps:
-      - id: first
-        name: Build ${{ github.ref_name }}
-        env:
-          STEP_ENV: ${{ github.sha }}
-        run: echo "sha=${{ github.sha }} env=$STEP_ENV job=${{ env.JOB_ENV }} wf=${{ env.WORKFLOW_ENV }} run=22128"
-      - if: github.ref == 'refs/heads/zig-m2-test'
-        run: echo only-on-this-branch
-      - if: ${{ failure() }}
-        run: echo only-on-failure
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.sha }}
-      - name: Outcomes
-        run: echo "outcome=${{ steps.first.outcome }} conclusion=${{ steps.first.conclusion }} fmt=${{ format('{0}-{1}', 1, 2) }} json=${{ toJSON(github.event_name) }}"
-      - name: Uses a secret
-        run: echo ${{ secrets.NOPE }}
-      - name: Always runs
-        if: always()
-        run: echo cleanup-ran
+      - id: build
+        run: |
+          echo "version=1.2.26789" >> "$GITHUB_OUTPUT"
+          echo "go=yes" >> "$GITHUB_OUTPUT"
+          echo "GREETING=hello-from-env" >> "$GITHUB_ENV"
+          mkdir -p /opt/t/bin && printf "#!/bin/sh\necho tool-ran\n" > /opt/t/bin/tool && chmod +x /opt/t/bin/tool
+          echo "/opt/t/bin" >> "$GITHUB_PATH"
+      - name: Use outputs
+        run: echo "version=${{ steps.build.outputs.version }} greeting=$GREETING" && tool && echo "ci=$CI sha=$GITHUB_SHA ref=$GITHUB_REF_NAME"
+      - name: Gated by an output
+        if: steps.build.outputs.go == 'yes'
+        run: echo gate-open
+      - name: Not gated in
+        if: steps.build.outputs.go == 'no'
+        run: echo should-not-run
