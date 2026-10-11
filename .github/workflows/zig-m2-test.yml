@@ -6,6 +6,6 @@ jobs:
   hello:
     runs-on: [self-hosted, zig-m2-test]
     steps:
-      - run: echo hello-cache && sleep 3 && echo done
+      - run: echo hello-logs && sleep 1 && echo done
       - name: Second step
-        run: echo "step two" # D
+        run: echo "step two" # L1
