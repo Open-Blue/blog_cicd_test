@@ -7,10 +7,11 @@ jobs:
     runs-on: [self-hosted, zig-m2-test]
     steps:
       - uses: actions/checkout@v4
-      - name: Checkout with inputs
+      - name: Look at the workspace
+        run: ls -a | head -8 && head -3 README.md
+      - name: Second checkout
         uses: actions/checkout@v4
         with:
           ref: main
-          path: other
-          fetch-depth: 1
-      - run: ls -la && ls other | head
+          path: main-copy
+      - run: ls main-copy | head -3
