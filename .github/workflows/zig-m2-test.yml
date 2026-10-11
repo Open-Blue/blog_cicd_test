@@ -8,10 +8,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Look at the workspace
-        run: ls -a | head -8 && head -3 README.md
+        run: ls -a | head -4 && head -2 .gitignore
       - name: Second checkout
         uses: actions/checkout@v4
         with:
           ref: main
           path: main-copy
-      - run: ls main-copy | head -3
+      - run: ls main-copy | head -3 && ls -a main-copy/.git | head -3
