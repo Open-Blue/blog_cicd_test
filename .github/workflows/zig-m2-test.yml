@@ -6,6 +6,11 @@ jobs:
   hello:
     runs-on: [self-hosted, zig-m2-test]
     steps:
-      - run: echo hello-logs && sleep 1 && echo done
-      - name: Second step
-        run: echo "step two" # L1
+      - uses: actions/checkout@v4
+      - name: Checkout with inputs
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: other
+          fetch-depth: 1
+      - run: ls -la && ls other | head
