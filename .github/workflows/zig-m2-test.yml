@@ -14,7 +14,7 @@ jobs:
         name: Build ${{ github.ref_name }}
         env:
           STEP_ENV: ${{ github.sha }}
-        run: echo "sha=${{ github.sha }} env=$STEP_ENV job=${{ env.JOB_ENV }}"
+        run: echo "sha=${{ github.sha }} env=$STEP_ENV job=${{ env.JOB_ENV }} wf=${{ env.WORKFLOW_ENV }} run=22128"
       - if: github.ref == 'refs/heads/zig-m2-test'
         run: echo only-on-this-branch
       - if: ${{ failure() }}
@@ -22,4 +22,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
-      - run: echo "outcome=${{ steps.first.outcome }} fmt=${{ format('{0}-{1}', 1, 2) }}"
+      - name: Outcomes
+        run: echo "outcome=${{ steps.first.outcome }} conclusion=${{ steps.first.conclusion }} fmt=${{ format('{0}-{1}', 1, 2) }} json=${{ toJSON(github.event_name) }}"
+      - name: Uses a secret
+        run: echo ${{ secrets.NOPE }}
+      - name: Always runs
+        if: always()
+        run: echo cleanup-ran
