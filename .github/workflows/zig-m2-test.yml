@@ -7,11 +7,12 @@ jobs:
     runs-on: [self-hosted, zig-m2-test]
     steps:
       - uses: actions/checkout@v4
-      - name: Look at the workspace
-        run: ls -a | head -4 && head -2 .gitignore
-      - name: Second checkout
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          path: main-copy
-      - run: ls main-copy | head -3 && ls -a main-copy/.git | head -3
+      - name: Slow step
+        run: echo tick1 && sleep 2 && echo tick2 && sleep 2 && echo tick3
+      - name: Fails but continues
+        continue-on-error: true
+        run: echo oops >&2; exit 3
+      - run: echo after # S1
+      - name: Cleanup
+        if: always()
+        run: echo cleanup
