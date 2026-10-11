@@ -2,16 +2,24 @@ name: zig-m2-test
 on:
   push:
     branches: [zig-m2-test]
+env:
+  WORKFLOW_ENV: from-workflow
 jobs:
   hello:
     runs-on: [self-hosted, zig-m2-test]
+    env:
+      JOB_ENV: ${{ github.ref_name }}-job
     steps:
+      - id: first
+        name: Build ${{ github.ref_name }}
+        env:
+          STEP_ENV: ${{ github.sha }}
+        run: echo "sha=${{ github.sha }} env=$STEP_ENV job=${{ env.JOB_ENV }}"
+      - if: github.ref == 'refs/heads/zig-m2-test'
+        run: echo only-on-this-branch
+      - if: ${{ failure() }}
+        run: echo only-on-failure
       - uses: actions/checkout@v4
-      - name: Slow step
-        run: echo live2340211590-1 && sleep 2 && echo live2340211590-2 && sleep 2 && echo live2340211590-3
-      - name: Fails but continues
-        continue-on-error: true
-        run: echo oops >&2; exit 3
-      - name: Cleanup
-        if: always()
-        run: echo cleanup
+        with:
+          ref: ${{ github.sha }}
+      - run: echo "outcome=${{ steps.first.outcome }} fmt=${{ format('{0}-{1}', 1, 2) }}"
