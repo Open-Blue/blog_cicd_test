@@ -8,4 +8,4 @@ jobs:
     steps:
       - run: echo hello && sleep 2 && echo done
       - name: Second step
-        run: echo "step two" >&2
+        run: echo "step two" >&2 # v2
