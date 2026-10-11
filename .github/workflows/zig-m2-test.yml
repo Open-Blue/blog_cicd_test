@@ -1,0 +1,9 @@
+name: zig-m2-test
+on:
+  push:
+    branches: [zig-m2-test]
+jobs:
+  hello:
+    runs-on: [self-hosted, zig-m2-test]
+    steps:
+      - run: echo hello && sleep 2 && echo done
