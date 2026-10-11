@@ -1,4 +1,4 @@
-name: zig-m2-test
+name: db-e2e
 on:
   push:
     branches: [zig-m2-test]
@@ -6,18 +6,13 @@ jobs:
   hello:
     runs-on: [self-hosted, zig-m2-test]
     steps:
-      - id: build
-        run: |
-          echo "version=1.2.26789" >> "$GITHUB_OUTPUT"
-          echo "go=yes" >> "$GITHUB_OUTPUT"
-          echo "GREETING=hello-from-env" >> "$GITHUB_ENV"
-          mkdir -p /opt/t/bin && printf "#!/bin/sh\necho tool-ran\n" > /opt/t/bin/tool && chmod +x /opt/t/bin/tool
-          echo "/opt/t/bin" >> "$GITHUB_PATH"
-      - name: Use outputs
-        run: echo "version=${{ steps.build.outputs.version }} greeting=$GREETING" && tool && echo "ci=$CI sha=$GITHUB_SHA ref=$GITHUB_REF_NAME"
-      - name: Gated by an output
-        if: steps.build.outputs.go == 'yes'
-        run: echo gate-open
-      - name: Not gated in
-        if: steps.build.outputs.go == 'no'
-        run: echo should-not-run
+      - name: Slow step
+        run: echo db-16125-1 && sleep 2 && echo db-16125-2 && echo to-stderr >&2
+      - name: Fails but continues
+        continue-on-error: true
+        run: echo oops >&2; exit 3
+      - name: Skipped
+        if: failure()
+        run: echo never
+      - name: Last
+        run: echo done
